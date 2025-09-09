@@ -173,6 +173,33 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "创建模型时出错: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+        
+        // 设置自动对焦
+        setupAutoFocus();
+    }
+
+    /**
+     * 设置自动对焦
+     * 启用ARCore的自动对焦功能以解决摄像头模糊问题
+     */
+    private void setupAutoFocus() {
+        arFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
+            try {
+                Session session = arFragment.getArSceneView().getSession();
+                if (session != null) {
+                    Config config = session.getConfig();
+                    
+                    // 只配置自动对焦（解决模糊问题）
+                    if (config.getFocusMode() != Config.FocusMode.AUTO) {
+                        config.setFocusMode(Config.FocusMode.AUTO);
+                        session.configure(config);
+                        Log.d("ARApp", "已启用自动对焦");
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ARApp", "自动对焦设置失败: " + e.getMessage());
+            }
+        });
     }
 
     /**
